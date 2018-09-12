@@ -1,4 +1,4 @@
-package k0bin.moodle.model.api.ajax;
+package k0bin.moodle.model.api;
 
 public class AjaxResponse<T> {
     private final boolean error;
