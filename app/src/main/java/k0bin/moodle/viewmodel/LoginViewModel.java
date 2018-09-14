@@ -5,7 +5,10 @@ import android.app.Application;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
 import android.support.annotation.NonNull;
+import android.util.Base64;
 import android.util.Log;
+
+import java.io.UnsupportedEncodingException;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import k0bin.moodle.model.LoginRequest;
@@ -50,7 +53,16 @@ public class LoginViewModel extends MoodleViewModel {
 
     public void setTokenUrl(@NonNull String url) {
         if (url.startsWith("moodlemobile://token=")) {
-            setToken(url.substring("moodlemobile://token=".length()));
+            try {
+                String rawToken = url.substring("moodlemobile://token=".length());
+                rawToken = rawToken.replaceAll("[#=]", "");
+                byte[] data = Base64.decode(rawToken, Base64.DEFAULT);
+                String token = new String(data, "UTF-8");
+                String[] tokenParts = token.split(":::");
+                setToken(tokenParts[1]);
+            } catch (UnsupportedEncodingException e) {
+
+            }
         }
     }
 

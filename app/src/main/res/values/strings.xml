@@ -5,6 +5,8 @@
     <string name="setup_url">Moodle URL</string>
     <string name="login_title">Log-in</string>
 
+    <string name="home_title">Moodle</string>
+
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

@@ -3,19 +3,12 @@ package k0bin.moodle.viewmodel;
 import android.annotation.SuppressLint;
 import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;
-import android.arch.lifecycle.LiveData;
-import android.arch.lifecycle.MutableLiveData;
-import android.content.Context;
-import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.util.Pair;
 
 import io.reactivex.Single;
+import io.reactivex.android.schedulers.AndroidSchedulers;
 import k0bin.moodle.model.Moodle;
 import k0bin.moodle.model.MoodlePrefs;
-import k0bin.moodle.model.MoodleStatus;
-import k0bin.moodle.util.RxSharedPreference;
 
 @SuppressWarnings("ResultOfMethodCallIgnored")
 @SuppressLint("CheckResult")
@@ -31,6 +24,7 @@ public abstract class MoodleViewModel extends AndroidViewModel {
         moodlePrefs = MoodlePrefs.getInstance(application);
         moodle = moodlePrefs
                 .getSite()
+                .observeOn(AndroidSchedulers.mainThread())
                 .zipWith(moodlePrefs.getToken(), (site, token) -> {
                     final Moodle moodle;
                     if (site != null && site.length() > 0) {

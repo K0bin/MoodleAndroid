@@ -26,6 +26,9 @@ public final class Moodle {
     @Nullable
     private String token = null;
 
+    @Nullable
+    private String privateToken = null;
+
     @NonNull
     private final Object requestLock = new Object(); //Still cleaner than manually managing a mutex
     @Nullable
@@ -39,6 +42,10 @@ public final class Moodle {
 
     public void setToken(@NonNull String token) {
         this.token = token;
+    }
+
+    public void setPrivateToken(@NonNull String privateToken) {
+        this.privateToken = token;
     }
 
     @NonNull

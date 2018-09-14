@@ -14,6 +14,7 @@
         android:textAllCaps="true"
         android:fontFamily="sans-serif"
         android:text="@string/setup_title"
+        android:textStyle="bold"
         android:layout_marginTop="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginEnd="8dp"
