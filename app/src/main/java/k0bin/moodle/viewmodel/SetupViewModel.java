@@ -2,10 +2,9 @@ package k0bin.moodle.viewmodel;
 
 import android.annotation.SuppressLint;
 import android.app.Application;
+import android.arch.lifecycle.AndroidViewModel;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
-import android.content.Context;
-import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 
 import java.net.MalformedURLException;
@@ -15,10 +14,11 @@ import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 import k0bin.moodle.model.LoginRequest;
+import k0bin.moodle.model.Moodle;
 import k0bin.moodle.model.MoodlePrefs;
 import k0bin.moodle.util.Attempt;
 
-public class SetupViewModel extends MoodleViewModel {
+public class SetupViewModel extends AndroidViewModel {
     @NonNull
     private String siteUrl = "";
 
@@ -69,8 +69,8 @@ public class SetupViewModel extends MoodleViewModel {
                 return Single.error(new MalformedURLException());
             }
 
-            initializeMoodle(siteUrl);
-            return getMoodle().prepareLogin();
+            final Moodle moodle = Moodle.getInstance(siteUrl);
+            return moodle.prepareLogin();
         } catch (MalformedURLException e) {
             return Single.error(e);
         }

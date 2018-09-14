@@ -29,7 +29,7 @@
             android:id="@+id/action_setup"
             app:destination="@id/setupFragment"/>
         <action
-            android:id="@+id/action_mainLogin"
+            android:id="@+id/action_login"
             app:destination="@id/loginFragment"/>
     </fragment>
 </navigation>

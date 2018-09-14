@@ -23,7 +23,7 @@ public abstract class LoginRequest {
     }
 
     public static class SsoLoginRequest extends LoginRequest {
-        @Nullable
+        @NonNull
         private final String loginUrl;
 
         public SsoLoginRequest(@NonNull String moodleSiteUrl, @NonNull String loginUrl) {
@@ -31,7 +31,7 @@ public abstract class LoginRequest {
             this.loginUrl = loginUrl;
         }
 
-        @Nullable
+        @NonNull
         public String getLoginUrl() {
             return loginUrl;
         }
