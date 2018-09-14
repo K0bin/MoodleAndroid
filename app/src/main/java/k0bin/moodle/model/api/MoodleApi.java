@@ -23,14 +23,22 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 
 public final class MoodleApi {
+    @NonNull
     private final String siteUrl;
+    @NonNull
     private final Gson gson;
+    @NonNull
     private final OkHttpClient okHttpClient;
 
     public MoodleApi(@NonNull String siteUrl) {
         this.siteUrl = siteUrl;
         this.gson = new GsonBuilder().create();
         okHttpClient = new OkHttpClient.Builder().build();
+    }
+
+    @NonNull
+    public String getSiteUrl() {
+        return siteUrl;
     }
 
     @NonNull

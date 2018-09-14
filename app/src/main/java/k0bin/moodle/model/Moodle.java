@@ -27,7 +27,8 @@ public final class Moodle {
         this.token = token;
     }
 
-    public final Single<Authentication> prepareLogin() {
+    @NonNull
+    public final Single<LoginRequest> prepareLogin() {
         return Single.fromCallable(() -> {
             final PublicConfig config;
             synchronized (moodle) {
@@ -42,7 +43,7 @@ public final class Moodle {
             }
 
             String url = config.getLaunchUrl() + String.format(Locale.ENGLISH, "?service=%s&passport=%f&urlscheme=%s", SERVICE_KEY, passport, URL_SCHEME);
-            return (Authentication)(new Authentication.SsoLoginRequest(url));
+            return (LoginRequest)(new LoginRequest.SsoLoginRequest(moodle.getSiteUrl(), url));
         }).subscribeOn(Schedulers.io());
     }
 }

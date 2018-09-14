@@ -1,40 +1,44 @@
 package k0bin.moodle.view.fragment;
 
-import android.annotation.SuppressLint;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 
-import io.reactivex.android.schedulers.AndroidSchedulers;
+import androidx.navigation.NavController;
+import androidx.navigation.NavDestination;
+import androidx.navigation.Navigation;
+import androidx.navigation.fragment.FragmentNavigator;
 import io.reactivex.disposables.Disposable;
-import k0bin.moodle.model.Authentication;
+import k0bin.moodle.R;
 import k0bin.moodle.model.MoodleStatus;
-import k0bin.moodle.model.NavigationEvent;
 import k0bin.moodle.viewmodel.BaseViewModel;
+import k0bin.moodle.viewmodel.HomeViewModel;
 
 public abstract class BaseFragment extends Fragment {
+    private NavController navController;
+
     @NonNull
     protected abstract BaseViewModel getViewModel();
 
-    private Disposable loginRequest;
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
-    @SuppressLint("CheckResult")
-    protected final void initialize() {
-        BaseViewModel viewModel = getViewModel();
-        viewModel.getStatus().observe(this, it -> {
-            if (it == MoodleStatus.NEEDS_LOGIN) {
-                
+        getViewModel().getStatus().observe(this, it -> {
+            final NavDestination currentDestination = navController.getCurrentDestination();
+            if (MoodleStatus.NEEDS_SETUP.equals(it) && (!(currentDestination instanceof FragmentNavigator.Destination) || ((FragmentNavigator.Destination)currentDestination).getFragmentClass() != SetupFragment.class)) {
+                navController.navigate(R.id.action_setup);
             }
         });
     }
 
-    protected final void login(Authentication request) {
-
-    }
-
     @Override
-    public void onDestroy() {
-        super.onDestroy();
-
-        loginRequest.dispose();
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        navController = Navigation.findNavController(getView());
     }
 }

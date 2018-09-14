@@ -14,9 +14,6 @@ import k0bin.moodle.R;
 import k0bin.moodle.viewmodel.BaseViewModel;
 import k0bin.moodle.viewmodel.HomeViewModel;
 
-/**
- * A simple {@link Fragment} subclass.
- */
 public class HomeFragment extends BaseFragment {
 
     private HomeViewModel viewModel;
@@ -26,20 +23,19 @@ public class HomeFragment extends BaseFragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        viewModel = ViewModelProviders.of(this).get(HomeViewModel.class);
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_home, container, false);
     }
 
     @NonNull
     @Override
     protected BaseViewModel getViewModel() {
+        if (viewModel == null) {
+            viewModel = ViewModelProviders.of(this).get(HomeViewModel.class);
+        }
         return viewModel;
     }
 }
