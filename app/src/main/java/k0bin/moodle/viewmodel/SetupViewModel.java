@@ -11,15 +11,14 @@ import android.support.annotation.NonNull;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import io.reactivex.Maybe;
 import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 import k0bin.moodle.model.LoginRequest;
+import k0bin.moodle.model.MoodlePrefs;
 import k0bin.moodle.util.Attempt;
 
-public class SetupViewModel extends BaseViewModel {
+public class SetupViewModel extends MoodleViewModel {
     @NonNull
     private String siteUrl = "";
 
@@ -54,12 +53,7 @@ public class SetupViewModel extends BaseViewModel {
                     }
                 })
                 .observeOn(Schedulers.io())
-                .doOnSuccess(request -> {
-                    SharedPreferences preferences = getApplication().getSharedPreferences(BaseViewModel.SHARED_PREF_NAME, Context.MODE_PRIVATE);
-                    SharedPreferences.Editor editor = preferences.edit();
-                    editor.putString(BaseViewModel.MOODLE_SITE_PREF, request.getMoodleSiteUrl());
-                    editor.commit();
-                })
+                .doOnSuccess(request -> MoodlePrefs.getInstance(getApplication()).setPrefs(request.getMoodleSiteUrl(), ""))
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(request -> result.setValue(new Attempt<>(request)));
         return result;

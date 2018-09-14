@@ -3,19 +3,33 @@
             xmlns:app="http://schemas.android.com/apk/res-auto"
             xmlns:tools="http://schemas.android.com/tools"
             android:id="@+id/nav_graph"
-            app:startDestination="@id/homeFragment">
+            app:startDestination="@id/mainFragment">
 
-    <fragment
-        android:id="@+id/homeFragment"
-        android:name="k0bin.moodle.view.fragment.HomeFragment"
-        android:label="HomeFragment">
-        <action
-            android:id="@+id/action_setup"
-            app:destination="@id/setupFragment"/>
-    </fragment>
     <fragment
         android:id="@+id/setupFragment"
         android:name="k0bin.moodle.view.fragment.SetupFragment"
         android:label="fragment_setup"
-        tools:layout="@layout/fragment_setup"/>
+        tools:layout="@layout/fragment_setup">
+        <action
+            android:id="@+id/action_setupLogin"
+            app:destination="@id/loginFragment"/>
+    </fragment>
+
+    <fragment
+        android:id="@+id/loginFragment"
+        android:name="k0bin.moodle.view.fragment.LoginFragment"
+        android:label="fragment_login"
+        tools:layout="@layout/fragment_login"/>
+    <fragment
+        android:id="@+id/mainFragment"
+        android:name="k0bin.moodle.view.fragment.MainFragment"
+        android:label="fragment_main"
+        tools:layout="@layout/fragment_main">
+        <action
+            android:id="@+id/action_setup"
+            app:destination="@id/setupFragment"/>
+        <action
+            android:id="@+id/action_mainLogin"
+            app:destination="@id/loginFragment"/>
+    </fragment>
 </navigation>
