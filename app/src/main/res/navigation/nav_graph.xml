@@ -11,7 +11,7 @@
         android:label="fragment_setup"
         tools:layout="@layout/fragment_setup">
         <action
-            android:id="@+id/action_setupLogin"
+            android:id="@+id/action_setup_login"
             app:destination="@id/loginFragment"/>
     </fragment>
 
@@ -19,7 +19,11 @@
         android:id="@+id/loginFragment"
         android:name="k0bin.moodle.view.fragment.LoginFragment"
         android:label="fragment_login"
-        tools:layout="@layout/fragment_login"/>
+        tools:layout="@layout/fragment_login">
+        <action
+            android:id="@+id/action_login_done"
+            app:destination="@id/mainFragment"/>
+    </fragment>
     <fragment
         android:id="@+id/mainFragment"
         android:name="k0bin.moodle.view.fragment.MainFragment"

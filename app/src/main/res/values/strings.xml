@@ -3,6 +3,7 @@
 
     <string name="setup_title">Setup</string>
     <string name="setup_url">Moodle URL</string>
+    <string name="login_title">Log-in</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>

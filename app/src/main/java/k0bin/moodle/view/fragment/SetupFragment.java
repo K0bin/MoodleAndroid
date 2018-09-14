@@ -51,7 +51,7 @@ public final class SetupFragment extends Fragment {
                 .observe(this, requestAttempt -> {
                     if (requestAttempt.wasSuccessful()) {
                         //Navigate
-                        navController.navigate(R.id.action_setupLogin);
+                        navController.navigate(R.id.action_setup_login);
                     } else {
                         Log.d("SetupFrag", "Error: "+requestAttempt.getError().getMessage());
                     }

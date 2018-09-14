@@ -53,7 +53,7 @@ public class SetupViewModel extends AndroidViewModel {
                     }
                 })
                 .observeOn(Schedulers.io())
-                .doOnSuccess(request -> MoodlePrefs.getInstance(getApplication()).setPrefs(request.getMoodleSiteUrl(), ""))
+                .doOnSuccess(request -> MoodlePrefs.getInstance(getApplication()).setSite(request.getMoodleSiteUrl()))
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(request -> result.setValue(new Attempt<>(request)));
         return result;
