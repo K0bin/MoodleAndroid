@@ -1,6 +1,6 @@
 package k0bin.moodle.model.api;
 
-public class AjaxResponse<T> {
+public final class AjaxResponse<T> {
     private final boolean error;
     private final T data;
 

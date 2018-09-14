@@ -22,7 +22,7 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
-public class MoodleApi {
+public final class MoodleApi {
     private final String siteUrl;
     private final Gson gson;
     private final OkHttpClient okHttpClient;
@@ -99,7 +99,7 @@ public class MoodleApi {
     }
 
     @Nullable
-    public PublicConfig getPublicConfig() {
+    public final PublicConfig getPublicConfig() {
         return call(PublicConfig.class, "tool_mobile_get_public_config", true, new Object(), null);
     }
 }

@@ -2,7 +2,7 @@ package k0bin.moodle.model.api;
 
 import com.google.gson.annotations.SerializedName;
 
-public class AjaxParameters<T> {
+public final class AjaxParameters<T> {
     @SerializedName("index")
     public final int index;
     @SerializedName("methodname")

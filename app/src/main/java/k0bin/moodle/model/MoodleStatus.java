@@ -1,9 +1,7 @@
 package k0bin.moodle.model;
 
 public enum MoodleStatus {
-    ERROR,
-    INCOMPATIBLE,
-    DISCONNECTED,
-    CONNECTED,
-    LOGGEDIN
+    NEEDS_SETUP,
+    NEEDS_LOGIN,
+    LOGGED_IN
 }
