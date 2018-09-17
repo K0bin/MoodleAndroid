@@ -1,16 +1,22 @@
 package k0bin.moodle.model;
 
+import android.annotation.SuppressLint;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Random;
 
+import io.reactivex.Flowable;
 import io.reactivex.Single;
+import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
+import k0bin.moodle.model.api.Course;
 import k0bin.moodle.model.api.MoodleApi;
 import k0bin.moodle.model.api.PublicConfig;
 
@@ -28,6 +34,8 @@ public final class Moodle {
 
     @Nullable
     private String privateToken = null;
+
+    private long userId = 0L;
 
     private Moodle(@NonNull String siteUrl) {
         this.siteUrl = siteUrl;
@@ -62,22 +70,55 @@ public final class Moodle {
                     String url = config.getLaunchUrl() + String.format(Locale.ENGLISH, "?service=%s&passport=%f&urlscheme=%s", SERVICE_KEY, passport, URL_SCHEME);
                     return (LoginRequest)(new LoginRequest.SsoLoginRequest(moodle.getSiteUrl(), url));
                 })
-                .subscribeOn(Schedulers.io());
+                .retry(error -> error instanceof IOException)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
     }
 
     @NonNull
-    public final Single<Long> getUserId() throws MoodleException.InvalidTokenException {
+    public final Single<Long> loadUserId() throws MoodleException.InvalidTokenException {
         if (token == null) {
             throw new MoodleException.InvalidTokenException();
         }
         return Single
                 .fromCallable(() -> moodle.getSiteInfo(token).getUserId())
-                .subscribeOn(Schedulers.io());
+                .doOnSuccess(it -> userId = it)
+                .retry(error -> error instanceof IOException)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
+    }
+
+    @SuppressLint("CheckResult")
+    @NonNull
+    public final Flowable<Course> loadCourses() throws MoodleException.InvalidTokenException {
+        if (token == null) {
+            throw new MoodleException.InvalidTokenException();
+        }
+        final Flowable<Course> flowable = Flowable.defer(() -> s -> {
+            try {
+                final List<Course> courses = moodle.getCourses(token, userId);
+                for (Course course : courses) {
+                    s.onNext(course);
+                }
+                s.onComplete();
+            } catch (IOException | MoodleException e) {
+                s.onError(e);
+            }
+        });
+        flowable
+                .retry(error -> error instanceof IOException)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
+        return flowable;
     }
 
     @NonNull
     public String getSiteUrl() {
         return siteUrl;
+    }
+
+    public void setUserId(long userId) {
+        this.userId = userId;
     }
 
     private static final Map<String, WeakReference<Moodle>> instances = new HashMap<>();

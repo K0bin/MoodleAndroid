@@ -2,7 +2,6 @@ package k0bin.moodle.model.api;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.util.Pair;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -114,9 +113,12 @@ public final class MoodleApi {
         }
 
         String bodyText = response.body().string();
-        final RestError error = gson.fromJson(bodyText, RestError.class);
-        if (!error.isSuccessful()) {
-            throw MoodleException.parse(error);
+
+        if (!bodyText.startsWith("[")) {
+            final RestError error = gson.fromJson(bodyText, RestError.class);
+            if (!error.isSuccessful()) {
+                throw MoodleException.parse(error);
+            }
         }
         final R result = gson.fromJson(bodyText, resultType);
         if (result != null) {
@@ -134,5 +136,13 @@ public final class MoodleApi {
         final HashMap<String, String> args = new HashMap<>();
         args.put("wstoken", token);
         return callRest(SiteInfo.class, "core_webservice_get_site_info", null, args);
+    }
+
+    public final List<Course> getCourses(@NonNull String token, long userId) throws IOException, MoodleException {
+        final HashMap<String, String> args = new HashMap<>();
+        args.put("wstoken", token);
+        args.put("userid", Long.toString(userId, 10));
+        final Type parameterizedType = TypeToken.getParameterized(List.class, Course.class).getType();
+        return callRest(parameterizedType, "core_enrol_get_users_courses", null, args);
     }
 }

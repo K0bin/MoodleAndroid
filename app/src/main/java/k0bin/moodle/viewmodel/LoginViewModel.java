@@ -34,9 +34,7 @@ public class LoginViewModel extends MoodleViewModel {
         isDone.setValue(false);
 
         getMoodle()
-                .subscribeOn(Schedulers.io())
                 .flatMapSingleElement(Moodle::prepareLogin)
-                .observeOn(AndroidSchedulers.mainThread())
                 .doOnError(it -> {
                     Log.e("LoginVM", it.getMessage());
                 })
@@ -70,10 +68,8 @@ public class LoginViewModel extends MoodleViewModel {
     public void setToken(@NonNull String token) {
         prefs.setToken(token);
         getMoodle()
-                .flatMapSingleElement(Moodle::getUserId)
-                .observeOn(Schedulers.io())
+                .flatMapSingleElement(Moodle::loadUserId)
                 .doOnSuccess(prefs::setUserId)
-                .observeOn(AndroidSchedulers.mainThread())
                 .doOnError(error -> {
                     isDone.setValue(false);
                     Log.e("LoginVM", "Login failed with error: "+error.getMessage());

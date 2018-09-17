@@ -12,8 +12,9 @@ import android.view.ViewGroup;
 
 import k0bin.moodle.R;
 import k0bin.moodle.viewmodel.HomeViewModel;
+import k0bin.moodle.viewmodel.MoodleViewModel;
 
-public class HomeFragment extends Fragment {
+public class HomeFragment extends DrawerFragment {
 
     private HomeViewModel viewModel;
 
@@ -22,12 +23,19 @@ public class HomeFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        viewModel = ViewModelProviders.of(this).get(HomeViewModel.class);
     }
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_home, container, false);
+    }
+
+    @NonNull
+    @Override
+    protected MoodleViewModel getViewModel() {
+        if (viewModel == null) {
+            viewModel = ViewModelProviders.of(this).get(HomeViewModel.class);
+        }
+        return viewModel;
     }
 }

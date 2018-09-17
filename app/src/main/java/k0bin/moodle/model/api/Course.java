@@ -3,6 +3,8 @@ package k0bin.moodle.model.api;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+import java.util.Objects;
+
 public class Course {
 
     @SerializedName("id")
@@ -151,5 +153,33 @@ public class Course {
 
     public int getEndDate() {
         return endDate;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Course course = (Course) o;
+        return id == course.id &&
+                enrolledUserCount == course.enrolledUserCount &&
+                visible == course.visible &&
+                summaryFormat == course.summaryFormat &&
+                showGrades == course.showGrades &&
+                enableCompletion == course.enableCompletion &&
+                category == course.category &&
+                startDate == course.startDate &&
+                endDate == course.endDate &&
+                Objects.equals(shortName, course.shortName) &&
+                Objects.equals(fullName, course.fullName) &&
+                Objects.equals(idNumber, course.idNumber) &&
+                Objects.equals(summary, course.summary) &&
+                Objects.equals(format, course.format) &&
+                Objects.equals(lang, course.lang) &&
+                Objects.equals(progress, course.progress);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, shortName, fullName, enrolledUserCount, idNumber, visible, summary, summaryFormat, format, showGrades, lang, enableCompletion, category, progress, startDate, endDate);
     }
 }
