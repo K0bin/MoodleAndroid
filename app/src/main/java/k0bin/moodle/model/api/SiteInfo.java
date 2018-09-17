@@ -19,7 +19,7 @@ public class SiteInfo {
     @Expose
     private final String firstName;
 
-    @SerializedName("lastName")
+    @SerializedName("lastname")
     @Expose
     private final String lastName;
 
@@ -154,7 +154,7 @@ public class SiteInfo {
         return userId;
     }
 
-    public String getSiteurl() {
+    public String getSiteUrl() {
         return siteUrl;
     }
 
