@@ -15,6 +15,7 @@ import k0bin.moodle.model.MoodleException;
 import k0bin.moodle.model.api.AdvancedFeature;
 import k0bin.moodle.model.api.AjaxResponse;
 import k0bin.moodle.model.api.ApiFunction;
+import k0bin.moodle.model.api.Course;
 import k0bin.moodle.model.api.PublicConfig;
 import k0bin.moodle.model.api.RestError;
 import k0bin.moodle.model.api.SiteInfo;
@@ -55,28 +56,28 @@ public class JsonTests {
                 "}";
 
         final PublicConfig config = gson.fromJson(json, PublicConfig.class);
-        Assert.assertEquals(config.getWwwRoot(), "root");
-        Assert.assertEquals(config.getHttpsWwwRoot(), "httpsroot");
-        Assert.assertEquals(config.getSiteName(), "Testsite");
-        Assert.assertEquals(config.getGuestLogin(), 0);
-        Assert.assertEquals(config.getRememberUsername(), 1);
-        Assert.assertEquals(config.getRegisterAuth(), "hello world");
-        Assert.assertEquals(config.getForgottenPasswordUrl(), "https://givepassword");
-        Assert.assertEquals(config.getAuthInstructions(), "Log in!");
-        Assert.assertEquals(config.getAuthNoneEnabled(), 0);
-        Assert.assertEquals(config.getEnableWebServices(), 1);
-        Assert.assertEquals(config.getEnableMobileWebService(), 1);
-        Assert.assertEquals(config.getMaintenanceEnabled(), 0);
-        Assert.assertEquals(config.getMaintenanceMessage(), "Too bad");
-        Assert.assertEquals(config.getLogoUrl(), "https://logo");
-        Assert.assertEquals(config.getCompactlogourl(), "https://compactlogo");
-        Assert.assertEquals(config.getTypeOfLogin(), 12);
-        Assert.assertEquals(config.getLaunchUrl(), "http://launchme");
-        Assert.assertEquals(config.getMobileCssUrl(), "https://css");
-        Assert.assertEquals(config.getToolMobileDisabledFeatures(), "no");
-        Assert.assertArrayEquals(config.getWarnings().toArray(), new String[] {
+        Assert.assertEquals("root", config.getWwwRoot());
+        Assert.assertEquals("httpsroot", config.getHttpsWwwRoot());
+        Assert.assertEquals("Testsite", config.getSiteName());
+        Assert.assertEquals(0, config.getGuestLogin());
+        Assert.assertEquals(1, config.getRememberUsername());
+        Assert.assertEquals("hello world", config.getRegisterAuth());
+        Assert.assertEquals("https://givepassword", config.getForgottenPasswordUrl());
+        Assert.assertEquals("Log in!", config.getAuthInstructions());
+        Assert.assertEquals(0, config.getAuthNoneEnabled());
+        Assert.assertEquals(1, config.getEnableWebServices());
+        Assert.assertEquals(1, config.getEnableMobileWebService());
+        Assert.assertEquals(0, config.getMaintenanceEnabled());
+        Assert.assertEquals("Too bad", config.getMaintenanceMessage());
+        Assert.assertEquals("https://logo", config.getLogoUrl());
+        Assert.assertEquals("https://compactlogo", config.getCompactlogourl());
+        Assert.assertEquals(12, config.getTypeOfLogin());
+        Assert.assertEquals("http://launchme", config.getLaunchUrl());
+        Assert.assertEquals("https://css", config.getMobileCssUrl());
+        Assert.assertEquals("no", config.getToolMobileDisabledFeatures());
+        Assert.assertArrayEquals(new String[] {
             "warning1", "warning2"
-        });
+        }, config.getWarnings().toArray());
 
     }
 
@@ -126,43 +127,43 @@ public class JsonTests {
                 "   \"usercalendartype\":\"gregorian\"\n" +
                 "}";
         final SiteInfo info = this.gson.fromJson(siteInfoJson, SiteInfo.class);
-        Assert.assertEquals(info.getSiteName(), "Testsite");
-        Assert.assertEquals(info.getUserName(), "Testuser");
-        Assert.assertEquals(info.getFirstName(), "Test");
-        Assert.assertEquals(info.getLastName(), "User");
-        Assert.assertEquals(info.getFullName(), "Test, User");
-        Assert.assertEquals(info.getLang(), "de");
-        Assert.assertEquals(info.getUserId(), 1L);
-        Assert.assertEquals(info.getSiteUrl(), "https://moodletest.com");
-        Assert.assertEquals(info.getUserpictureurl(), "https://moodletest.com/pic.jpg");
-        Assert.assertArrayEquals(info.getFunctions().toArray(), new ApiFunction[] {
+        Assert.assertEquals("Testsite", info.getSiteName());
+        Assert.assertEquals("Testuser", info.getUserName());
+        Assert.assertEquals("Test", info.getFirstName());
+        Assert.assertEquals("User", info.getLastName());
+        Assert.assertEquals("Test, User", info.getFullName());
+        Assert.assertEquals("de", info.getLang());
+        Assert.assertEquals(1L, info.getUserId());
+        Assert.assertEquals("https://moodletest.com", info.getSiteUrl());
+        Assert.assertEquals("https://moodletest.com/pic.jpg", info.getUserpictureurl());
+        Assert.assertArrayEquals(new ApiFunction[] {
                 new ApiFunction("func1", "1.1.1"),
                 new ApiFunction("func2", "2.0.1")
-        });
-        Assert.assertEquals(info.getDownloadfiles(), 1);
-        Assert.assertEquals(info.getUploadfiles(), 1);
-        Assert.assertEquals(info.getRelease(), "3.4.2+ (Build: 20180502)");
-        Assert.assertEquals(info.getVersion(), "2017111302.1");
-        Assert.assertEquals(info.getMobileCssUrl(), "");
-        Assert.assertArrayEquals(info.getAdvancedFeatures().toArray(), new AdvancedFeature[] {
+        }, info.getFunctions().toArray());
+        Assert.assertEquals(1, info.getDownloadfiles());
+        Assert.assertEquals(1, info.getUploadfiles());
+        Assert.assertEquals("3.4.2+ (Build: 20180502)", info.getRelease());
+        Assert.assertEquals("2017111302.1", info.getVersion());
+        Assert.assertEquals("", info.getMobileCssUrl());
+        Assert.assertArrayEquals(new AdvancedFeature[] {
                 new AdvancedFeature("usecomments", 1),
                 new AdvancedFeature("usetags", 0)
-        });
+        }, info.getAdvancedFeatures().toArray());
         Assert.assertTrue(info.userCanManageOwnFiles());
-        Assert.assertEquals(info.getUserQuota(), 25L);
-        Assert.assertEquals(info.getUserMaxUploadFileSize(), 104857600);
-        Assert.assertEquals(info.getUserHomepage(), 0);
-        Assert.assertEquals(info.getSiteCalendarType(), "gregorian");
-        Assert.assertEquals(info.getUserCalendarType(), "gregorian");
+        Assert.assertEquals(25L, info.getUserQuota());
+        Assert.assertEquals(104857600, info.getUserMaxUploadFileSize());
+        Assert.assertEquals(0, info.getUserHomepage());
+        Assert.assertEquals("gregorian", info.getSiteCalendarType());
+        Assert.assertEquals("gregorian", info.getUserCalendarType());
     }
 
     @Test
     public void testRestError() {
         final String json = "{\"exception\":\"exception\",\"errorcode\":\"errorcode1\",\"message\":\"hello\"}";
         final RestError error = gson.fromJson(json, RestError.class);
-        Assert.assertEquals(error.getException(), "exception");
-        Assert.assertEquals(error.getErrorCode(), "errorcode1");
-        Assert.assertEquals(error.getMessage(), "hello");
+        Assert.assertEquals("exception", error.getException());
+        Assert.assertEquals("errorcode1", error.getErrorCode());
+        Assert.assertEquals("hello", error.getMessage());
     }
 
     @Test(expected = MoodleException.InvalidTokenException.class)
@@ -183,5 +184,44 @@ public class JsonTests {
         Assert.assertEquals(ajaxResponse.size(), 1);
         Assert.assertFalse(ajaxResponse.get(0).isSuccessful());
         Assert.assertEquals(ajaxResponse.get(0).getData(), "hello");
+    }
+
+    @Test
+    public void testCourse() {
+        final String json = "{\n" +
+                "\t\"id\": 13,\n" +
+                "\t\"shortname\": \"test\",\n" +
+                "\t\"fullname\": \"Test Kurs\",\n" +
+                "\t\"enrolledusercount\": 500,\n" +
+                "\t\"idnumber\": \"\",\n" +
+                "\t\"visible\": 1,\n" +
+                "\t\"summary\": \"Summary\",\n" +
+                "\t\"summaryformat\": 1,\n" +
+                "\t\"format\": \"topics\",\n" +
+                "\t\"showgrades\": true,\n" +
+                "\t\"lang\": \"\",\n" +
+                "\t\"enablecompletion\": false,\n" +
+                "\t\"category\": 517,\n" +
+                "\t\"progress\": null,\n" +
+                "\t\"startdate\": 1519081200,\n" +
+                "\t\"enddate\": 0\n" +
+                "}";
+        final Course course = gson.fromJson(json, Course.class);
+        Assert.assertEquals(13, course.getId());
+        Assert.assertEquals("test", course.getShortName());
+        Assert.assertEquals("Test Kurs", course.getFullName());
+        Assert.assertEquals(500, course.getEnrolledUserCount());
+        Assert.assertEquals("", course.getIdNumber());
+        Assert.assertEquals(1, course.getVisible());
+        Assert.assertEquals("Summary", course.getSummary());
+        Assert.assertEquals(1, course.getSummaryFormat());
+        Assert.assertEquals("topics", course.getFormat());
+        Assert.assertTrue(course.getShowGrades());
+        Assert.assertEquals("", course.getLang());
+        Assert.assertFalse(course.getEnableCompletion());
+        Assert.assertEquals(517, course.getCategory());
+        Assert.assertNull(course.getProgress());
+        Assert.assertEquals(1519081200, course.getStartDate());
+        Assert.assertEquals(0, course.getEndDate());
     }
 }

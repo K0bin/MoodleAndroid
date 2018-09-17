@@ -2,6 +2,7 @@ package k0bin.moodle.model.api;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.util.Pair;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -9,6 +10,7 @@ import com.google.gson.reflect.TypeToken;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
+import java.util.HashMap;
 import java.util.List;
 
 import k0bin.moodle.model.MoodleException;
@@ -56,18 +58,22 @@ public final class MoodleApi {
     }
 
     @NonNull
-    private <T> Request buildRestRequest(@NonNull String method, @Nullable T args, @Nullable String token) {
+    private <T> Request buildRestRequest(@NonNull String method, @Nullable T args, @Nullable HashMap<String, String> queryParameters) {
         final Request.Builder builder = new Request.Builder();
         final HttpUrl url = HttpUrl.parse(siteUrl + "/webservice/rest/server.php");
-        final HttpUrl urlWithParams = new HttpUrl.Builder()
-                .scheme(url.scheme())
-                .host(url.host())
-                .port(url.port())
-                .addEncodedPathSegments("webservice/rest/server.php")
-                .setQueryParameter("wsfunction", method)
-                .setQueryParameter("wstoken", token != null ? token : "")
-                .setQueryParameter("moodlewsrestformat", "json")
-                .build();
+        final HttpUrl.Builder urlBuilder = new HttpUrl.Builder();
+        urlBuilder.scheme(url.scheme())
+        .host(url.host())
+        .port(url.port())
+        .addEncodedPathSegments("webservice/rest/server.php")
+        .setQueryParameter("wsfunction", method)
+        .setQueryParameter("moodlewsrestformat", "json");
+        if (queryParameters != null) {
+            for (HashMap.Entry<String, String> entry : queryParameters.entrySet()) {
+                urlBuilder.setQueryParameter(entry.getKey(), entry.getValue());
+            }
+        }
+        final HttpUrl urlWithParams = urlBuilder.build();
 
         builder.url(urlWithParams);
         RequestBody body;
@@ -100,8 +106,8 @@ public final class MoodleApi {
     }
 
     @Nullable
-    private <T, R> R callRest(@NonNull Type resultType, @NonNull String method, @Nullable T args, @Nullable String token) throws IOException, MoodleException {
-        final Request request = buildRestRequest(method, args, token);
+    private <T, R> R callRest(@NonNull Type resultType, @NonNull String method, @Nullable T body, @Nullable HashMap<String, String> queryParameters) throws IOException, MoodleException {
+        final Request request = buildRestRequest(method, body, queryParameters);
         final Response response = okHttpClient.newCall(request).execute();
         if (response.body() == null) {
             return null;
@@ -125,6 +131,8 @@ public final class MoodleApi {
     }
 
     public final SiteInfo getSiteInfo(@NonNull String token) throws IOException, MoodleException {
-        return callRest(SiteInfo.class, "core_webservice_get_site_info", null, token);
+        final HashMap<String, String> args = new HashMap<>();
+        args.put("wstoken", token);
+        return callRest(SiteInfo.class, "core_webservice_get_site_info", null, args);
     }
 }
