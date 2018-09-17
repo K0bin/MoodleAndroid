@@ -11,6 +11,7 @@ import android.util.Log;
 import java.io.UnsupportedEncodingException;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 import k0bin.moodle.model.LoginRequest;
 import k0bin.moodle.model.Moodle;
 import k0bin.moodle.model.MoodlePrefs;
@@ -33,7 +34,8 @@ public class LoginViewModel extends MoodleViewModel {
         isDone.setValue(false);
 
         getMoodle()
-                .flatMap(Moodle::prepareLogin)
+                .subscribeOn(Schedulers.io())
+                .flatMapSingleElement(Moodle::prepareLogin)
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnError(it -> {
                     Log.e("LoginVM", it.getMessage());
@@ -60,14 +62,28 @@ public class LoginViewModel extends MoodleViewModel {
                 String token = new String(data, "UTF-8");
                 String[] tokenParts = token.split(":::");
                 setToken(tokenParts[1]);
-            } catch (UnsupportedEncodingException e) {
-
-            }
+            } catch (UnsupportedEncodingException e) {}
         }
     }
 
+    @SuppressLint("CheckResult")
     public void setToken(@NonNull String token) {
         prefs.setToken(token);
-        isDone.setValue(true);
+        getMoodle()
+                .flatMapSingleElement(Moodle::getUserId)
+                .observeOn(Schedulers.io())
+                .doOnSuccess(prefs::setUserId)
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnError(error -> {
+                    isDone.setValue(false);
+                    Log.e("LoginVM", "Login failed with error: "+error.getMessage());
+                })
+                .onErrorReturn(error -> 0L)
+                .subscribe(id -> {
+                    if (id == 0L) {
+                        return;
+                    }
+                    isDone.setValue(true);
+                });
     }
 }

@@ -29,11 +29,6 @@ public final class Moodle {
     @Nullable
     private String privateToken = null;
 
-    @NonNull
-    private final Object requestLock = new Object(); //Still cleaner than manually managing a mutex
-    @Nullable
-    private LoginRequest loginRequest;
-
     private Moodle(@NonNull String siteUrl) {
         this.siteUrl = siteUrl;
         this.moodle = new MoodleApi(siteUrl);
@@ -50,12 +45,6 @@ public final class Moodle {
 
     @NonNull
     public final Single<LoginRequest> prepareLogin() {
-        synchronized (requestLock) {
-            if (loginRequest != null) {
-                return Single.just(loginRequest);
-            }
-        }
-
         return Single
                 .fromCallable(() -> {
                     final PublicConfig config;
@@ -73,12 +62,17 @@ public final class Moodle {
                     String url = config.getLaunchUrl() + String.format(Locale.ENGLISH, "?service=%s&passport=%f&urlscheme=%s", SERVICE_KEY, passport, URL_SCHEME);
                     return (LoginRequest)(new LoginRequest.SsoLoginRequest(moodle.getSiteUrl(), url));
                 })
-                .subscribeOn(Schedulers.io())
-                .doOnSuccess(it -> {
-                    synchronized (requestLock) {
-                        loginRequest = it;
-                    }
-                });
+                .subscribeOn(Schedulers.io());
+    }
+
+    @NonNull
+    public final Single<Long> getUserId() throws MoodleException.InvalidTokenException {
+        if (token == null) {
+            throw new MoodleException.InvalidTokenException();
+        }
+        return Single
+                .fromCallable(() -> moodle.getSiteInfo(token).getUserId())
+                .subscribeOn(Schedulers.io());
     }
 
     @NonNull

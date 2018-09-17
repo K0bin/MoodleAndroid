@@ -34,7 +34,7 @@ public class LoginFragment extends Fragment {
 
         viewModel = ViewModelProviders.of(this).get(LoginViewModel.class);
         viewModel.getIsDone().observe(this, it -> {
-            if (navController == null) {
+            if (navController == null || !it) {
                 return;
             }
             navController.navigate(R.id.action_login_done);

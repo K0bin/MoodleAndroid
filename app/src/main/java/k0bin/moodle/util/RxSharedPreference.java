@@ -17,6 +17,7 @@ public class RxSharedPreference {
         this.prefs = prefs;
     }
 
+    @NonNull
     public Single<String> getString(@NonNull String key, @NonNull String defaultVal) {
         return Single
                 .fromCallable(() -> { synchronized (prefs) {
@@ -26,6 +27,7 @@ public class RxSharedPreference {
                 .observeOn(AndroidSchedulers.mainThread());
     }
 
+    @NonNull
     public Single<Integer> getInt(@NonNull String key, int defaultVal) {
         return Single
                 .fromCallable(() -> { synchronized (prefs) {
@@ -35,6 +37,7 @@ public class RxSharedPreference {
                 .observeOn(AndroidSchedulers.mainThread());
     }
 
+    @NonNull
     public Single<Long> getLong(@NonNull String key, long defaultVal) {
         return Single
                 .fromCallable(() -> { synchronized (prefs) {
@@ -44,6 +47,7 @@ public class RxSharedPreference {
                 .observeOn(AndroidSchedulers.mainThread());
     }
 
+    @NonNull
     public Single<Float> getFloat(@NonNull String key, float defaultVal) {
         return Single
                 .fromCallable(() -> { synchronized (prefs) {
@@ -53,6 +57,7 @@ public class RxSharedPreference {
                 .observeOn(AndroidSchedulers.mainThread());
     }
 
+    @NonNull
     public Single<Boolean> getBoolean(@NonNull String key, boolean defaultVal) {
         return Single
                 .fromCallable(() -> { synchronized (prefs) {

@@ -15,11 +15,13 @@ public class MoodlePrefs {
     @NonNull
     private final RxSharedPreference rxPrefs;
     @NonNull
+    private static final String SHARED_PREF_NAME = "moodle_conf";
+    @NonNull
     private static final String MOODLE_SITE_PREF = "moodle_site";
     @NonNull
     private static final String MOODLE_TOKEN_PREF = "moodle_token";
     @NonNull
-    private static final String SHARED_PREF_NAME = "moodle_conf";
+    private static final String MOODLE_USER_ID_PREF = "moodle_user_id";
 
     private MoodlePrefs(@NonNull Context context) {
         this.prefs = context.getSharedPreferences(SHARED_PREF_NAME, Context.MODE_PRIVATE);
@@ -36,13 +38,9 @@ public class MoodlePrefs {
                 .subscribeOn(Schedulers.io());
     }
 
-    @SuppressLint("ApplySharedPref") //Intentional, gets called on background thread using RxJava
-    public void setPrefs(@NonNull String site, @NonNull String token) {
-        prefs
-                .edit()
-                .putString(MOODLE_SITE_PREF, site)
-                .putString(MOODLE_TOKEN_PREF, token)
-                .commit();
+    public Single<Long> getUserId() {
+        return rxPrefs.getLong(MOODLE_USER_ID_PREF, 0)
+                .subscribeOn(Schedulers.io());
     }
 
     @SuppressLint("ApplySharedPref") //Intentional, gets called on background thread using RxJava
@@ -58,6 +56,14 @@ public class MoodlePrefs {
         prefs
                 .edit()
                 .putString(MOODLE_TOKEN_PREF, token)
+                .commit();
+    }
+
+    @SuppressLint("ApplySharedPref") //Intentional, gets called on background thread using RxJava
+    public void setUserId(long userId) {
+        prefs
+                .edit()
+                .putLong(MOODLE_USER_ID_PREF, userId)
                 .commit();
     }
 

@@ -1,7 +1,5 @@
 package k0bin.moodle.model.api;
 
-import android.arch.lifecycle.LiveData;
-import android.arch.lifecycle.MutableLiveData;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
@@ -13,8 +11,7 @@ import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.List;
 
-import okhttp3.Call;
-import okhttp3.Callback;
+import k0bin.moodle.model.MoodleException;
 import okhttp3.HttpUrl;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
@@ -66,9 +63,9 @@ public final class MoodleApi {
                 .scheme(url.scheme())
                 .host(url.host())
                 .port(url.port())
-                .addEncodedPathSegment("/webservice/rest/server.php")
+                .addEncodedPathSegments("webservice/rest/server.php")
                 .setQueryParameter("wsfunction", method)
-                .setQueryParameter("wsToken", token != null ? token : "")
+                .setQueryParameter("wstoken", token != null ? token : "")
                 .setQueryParameter("moodlewsrestformat", "json")
                 .build();
 
@@ -83,31 +80,51 @@ public final class MoodleApi {
     }
 
     @Nullable
-    private <T, R> R call(@NonNull Type resultType, @NonNull String method, boolean useAjax, @NonNull T args, @Nullable String token) {
-        Request request = useAjax ? buildAjaxRequest(0, method, args) : buildRestRequest(method, args, token);
-        try {
-            Response response = okHttpClient.newCall(request).execute();
-            if (response.body() == null) {
-                return null;
-            }
+    private <T, R> R callAjax(@NonNull Type resultType, @NonNull String method, @Nullable T args, @Nullable String token) throws IOException, MoodleException {
+        final Request request = buildAjaxRequest(0, method, args);
+        final Response response = okHttpClient.newCall(request).execute();
+        if (response.body() == null) {
+            return null;
+        }
 
-            Type parameterizedType = TypeToken.getParameterized(
-                    List.class,
-                    TypeToken.getParameterized(AjaxResponse.class, resultType).getType()
-            ).getType();
-            List<AjaxResponse<R>> ajaxResponse = gson.fromJson(response.body().charStream(), parameterizedType);
-            if (ajaxResponse != null && ajaxResponse.size() > 0) {
-                return ajaxResponse.get(0).getData();
-            } else {
-                return null;
-            }
-        } catch (IOException e) {
+        final Type parameterizedType = TypeToken.getParameterized(
+                List.class,
+                TypeToken.getParameterized(AjaxResponse.class, resultType).getType()
+        ).getType();
+        final List<AjaxResponse<R>> ajaxResponse = gson.fromJson(response.body().charStream(), parameterizedType);
+        if (ajaxResponse != null && ajaxResponse.size() > 0) {
+            return ajaxResponse.get(0).getData();
+        } else {
             return null;
         }
     }
 
     @Nullable
-    public final PublicConfig getPublicConfig() {
-        return call(PublicConfig.class, "tool_mobile_get_public_config", true, new Object(), null);
+    private <T, R> R callRest(@NonNull Type resultType, @NonNull String method, @Nullable T args, @Nullable String token) throws IOException, MoodleException {
+        final Request request = buildRestRequest(method, args, token);
+        final Response response = okHttpClient.newCall(request).execute();
+        if (response.body() == null) {
+            return null;
+        }
+
+        String bodyText = response.body().string();
+        final RestError error = gson.fromJson(bodyText, RestError.class);
+        if (!error.isSuccessful()) {
+            throw MoodleException.parse(error);
+        }
+        final R result = gson.fromJson(bodyText, resultType);
+        if (result != null) {
+            return result;
+        }
+        return null;
+    }
+
+    @Nullable
+    public final PublicConfig getPublicConfig() throws IOException, MoodleException {
+        return callAjax(PublicConfig.class, "tool_mobile_get_public_config", null, null);
+    }
+
+    public final SiteInfo getSiteInfo(@NonNull String token) throws IOException, MoodleException {
+        return callRest(SiteInfo.class, "core_webservice_get_site_info", null, token);
     }
 }
