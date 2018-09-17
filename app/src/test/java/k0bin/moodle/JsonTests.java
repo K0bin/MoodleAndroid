@@ -15,6 +15,7 @@ import k0bin.moodle.model.MoodleException;
 import k0bin.moodle.model.api.AdvancedFeature;
 import k0bin.moodle.model.api.AjaxResponse;
 import k0bin.moodle.model.api.ApiFunction;
+import k0bin.moodle.model.api.PublicConfig;
 import k0bin.moodle.model.api.RestError;
 import k0bin.moodle.model.api.SiteInfo;
 
@@ -28,6 +29,54 @@ public class JsonTests {
 
     @Test
     public void testPublicConfig() {
+        final String json = "{\n" +
+                "\t\"wwwroot\": \"root\",\n" +
+                "\t\"httpswwwroot\": \"httpsroot\",\n" +
+                "\t\"sitename\": \"Testsite\",\n" +
+                "\t\"guestlogin\", 0,\n" +
+                "\t\"rememberusername\": 1,\n" +
+                "\t\"registerauth\": \"hello world\",\n" +
+                "\t\"forgottenpasswordurl\": \"https://givepassword\",\n" +
+                "\t\"authinstructions\": \"Log in!\",\n" +
+                "\t\"authnoneenabled\": 0,\n" +
+                "\t\"enablewebservices\": 1,\n" +
+                "\t\"enablemobilewebservice\": 1,\n" +
+                "\t\"maintenanceenabled\": 0,\n" +
+                "\t\"maintenancemessage\": \"Too bad\",\n" +
+                "\t\"logourl\": \"https://logo\",\n" +
+                "\t\"compactlogourl\": \"https://compactlogo\",\n" +
+                "\t\"typeoflogin\": 12,\n" +
+                "\t\"launchurl\": \"http://launchme\",\n" +
+                "\t\"mobilecssurl\": \"https://css\",\n" +
+                "\t\"tool_mobile_disabledfeatures\": \"no\",\n" +
+                "\t\"warnings\": [\n" +
+                "\t\t\"warning1\", \"warning2\"\n" +
+                "\t]\n" +
+                "}";
+
+        final PublicConfig config = gson.fromJson(json, PublicConfig.class);
+        Assert.assertEquals(config.getWwwRoot(), "root");
+        Assert.assertEquals(config.getHttpsWwwRoot(), "httpsroot");
+        Assert.assertEquals(config.getSiteName(), "Testsite");
+        Assert.assertEquals(config.getGuestLogin(), 0);
+        Assert.assertEquals(config.getRememberUsername(), 1);
+        Assert.assertEquals(config.getRegisterAuth(), "hello world");
+        Assert.assertEquals(config.getForgottenPasswordUrl(), "https://givepassword");
+        Assert.assertEquals(config.getAuthInstructions(), "Log in!");
+        Assert.assertEquals(config.getAuthNoneEnabled(), 0);
+        Assert.assertEquals(config.getEnableWebServices(), 1);
+        Assert.assertEquals(config.getEnableMobileWebService(), 1);
+        Assert.assertEquals(config.getMaintenanceEnabled(), 0);
+        Assert.assertEquals(config.getMaintenanceMessage(), "Too bad");
+        Assert.assertEquals(config.getLogoUrl(), "https://logo");
+        Assert.assertEquals(config.getCompactlogourl(), "https://compactlogo");
+        Assert.assertEquals(config.getTypeOfLogin(), 12);
+        Assert.assertEquals(config.getLaunchUrl(), "http://launchme");
+        Assert.assertEquals(config.getMobileCssUrl(), "https://css");
+        Assert.assertEquals(config.getToolMobileDisabledFeatures(), "no");
+        Assert.assertArrayEquals(config.getWarnings().toArray(), new String[] {
+            "warning1", "warning2"
+        });
 
     }
 
