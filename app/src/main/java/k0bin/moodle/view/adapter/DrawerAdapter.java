@@ -38,11 +38,11 @@ public class DrawerAdapter extends ListAdapter<Course, DrawerAdapter.ViewHolder>
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
-            this.courseName = itemView.findViewById(R.id.course_name);
+            this.courseName = itemView.findViewById(R.id.courseName);
         }
 
         public void bindCourse(@NonNull Course course) {
-            courseName.setText(course.getShortName());
+            courseName.setText(course.getFullName());
         }
     }
 

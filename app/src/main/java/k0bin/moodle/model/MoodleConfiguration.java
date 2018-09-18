@@ -4,8 +4,6 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 
-import io.reactivex.Single;
-
 public class MoodleConfiguration {
     @NonNull
     private static final String SHARED_PREF_NAME = "moodle_conf";

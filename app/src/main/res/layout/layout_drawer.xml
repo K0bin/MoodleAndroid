@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+       xmlns:tools="http://schemas.android.com/tools"
+       xmlns:app="http://schemas.android.com/apk/res-auto">
+
+
+    <android.support.design.bottomappbar.BottomAppBar
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        app:backgroundTint="?attr/colorPrimary"
+        android:elevation="4dp"
+        app:navigationIcon="@drawable/ic_menu_white_24dp"
+        android:id="@+id/bottomAppBar"
+        tools:ignore="BottomAppBar">
+
+    </android.support.design.bottomappbar.BottomAppBar>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/overlay"
+        android:visibility="gone"
+        android:elevation="11dp"
+        android:fitsSystemWindows="true"
+        android:background="#AA000000"
+        />
+
+    <android.support.design.card.MaterialCardView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:minHeight="128dp"
+        app:layout_behavior="@string/bottom_sheet_behavior"
+        app:behavior_peekHeight="300dp"
+        app:behavior_hideable="true"
+        android:id="@+id/drawerSheet"
+        app:cardElevation="12dp"
+        app:cardBackgroundColor="?attr/colorPrimary"
+        app:cardCornerRadius="16dp"
+        android:fitsSystemWindows="false"
+        >
+
+        <android.support.v7.widget.RecyclerView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            tools:itemCount="11"
+            android:layout_marginTop="16dp"
+            android:id="@+id/drawerRecycler"
+            android:paddingBottom="16dp"
+            android:clipToPadding="false"
+            app:layoutManager="android.support.v7.widget.LinearLayoutManager"
+            android:fitsSystemWindows="false"
+            android:orientation="vertical"/>
+    </android.support.design.card.MaterialCardView>
+
+</merge>

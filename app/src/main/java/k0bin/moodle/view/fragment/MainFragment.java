@@ -14,14 +14,16 @@ import androidx.navigation.NavController;
 import androidx.navigation.NavDestination;
 import androidx.navigation.Navigation;
 import androidx.navigation.fragment.FragmentNavigator;
+import androidx.navigation.fragment.NavHostFragment;
 import k0bin.moodle.R;
 import k0bin.moodle.model.MoodleSetupStatus;
+import k0bin.moodle.view.MainActivity;
 import k0bin.moodle.viewmodel.MainViewModel;
 
 /**
  * A simple {@link Fragment} subclass.
  */
-public class MainFragment extends Fragment {
+public class MainFragment extends Fragment implements MainActivity.BackFragment {
 
     @Nullable
     private NavController navController;
@@ -58,4 +60,19 @@ public class MainFragment extends Fragment {
         navController = Navigation.findNavController(view);
     }
 
+    @Override
+    public boolean goBack() {
+        final NavHostFragment navHostFragment = (NavHostFragment) getChildFragmentManager().findFragmentById(R.id.childNavHost);
+        final NavController navController = navHostFragment.getNavController();
+        NavDestination currentTop = navController.getCurrentDestination();
+        if (currentTop instanceof FragmentNavigator.Destination) {
+            Class<? extends Fragment> fragmentClass = ((FragmentNavigator.Destination) currentTop).getFragmentClass();
+            for (Fragment fragment : navHostFragment.getChildFragmentManager().getFragments()) {
+                if (fragment.getClass().equals(fragmentClass) && fragment instanceof MainActivity.BackFragment) {
+                    return ((MainActivity.BackFragment) fragment).goBack();
+                }
+            }
+        }
+        return false;
+    }
 }

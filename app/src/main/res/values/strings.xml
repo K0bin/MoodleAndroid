@@ -6,6 +6,7 @@
     <string name="login_title">Log-in</string>
 
     <string name="home_title">Moodle</string>
+    <string name="home_welcome">Welcome to Moodle\nClick on the hamburger icon down below to see your courses.</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
