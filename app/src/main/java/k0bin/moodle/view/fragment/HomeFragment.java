@@ -18,11 +18,9 @@ import k0bin.moodle.R;
 import k0bin.moodle.viewmodel.HomeViewModel;
 import k0bin.moodle.viewmodel.MoodleViewModel;
 
-public class HomeFragment extends DrawerFragment {
+public class HomeFragment extends Fragment {
 
     private HomeViewModel viewModel;
-    private MaterialCardView drawerSheet;
-    private TextView title;
 
     public HomeFragment() {}
 
@@ -39,34 +37,18 @@ public class HomeFragment extends DrawerFragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
-        drawerSheet = view.findViewById(R.id.drawerSheet);
-        title = view.findViewById(R.id.title);
-
-        view.post(() -> {
-            int height = view.getHeight();
-
-            int titleBottom = title.getBottom();
-            final ViewGroup.MarginLayoutParams titleParams = (ViewGroup.MarginLayoutParams)title.getLayoutParams();
-            titleBottom += titleParams.bottomMargin;
-
-            CoordinatorLayout.LayoutParams params = (CoordinatorLayout.LayoutParams)drawerSheet.getLayoutParams();
-            BottomSheetBehavior behavior = (BottomSheetBehavior)params.getBehavior();
-            behavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-            behavior.setPeekHeight(height - titleBottom - getStatusBarHeight());
-        });
     }
 
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-
-        drawerSheet = null;
-        title = null;
+    private int getStatusBarHeight() {
+        int result = 0;
+        int resourceId = getResources().getIdentifier("status_bar_height", "dimen", "android");
+        if (resourceId > 0) {
+            result = getResources().getDimensionPixelSize(resourceId);
+        }
+        return result;
     }
 
     @NonNull
-    @Override
     protected MoodleViewModel getViewModel() {
         if (viewModel == null) {
             viewModel = ViewModelProviders.of(this).get(HomeViewModel.class);
