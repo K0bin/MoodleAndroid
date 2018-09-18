@@ -1,15 +1,13 @@
 package k0bin.moodle.model;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import java.io.IOException;
-import java.lang.ref.WeakReference;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.Random;
 
 import io.reactivex.Flowable;
@@ -21,38 +19,43 @@ import k0bin.moodle.model.api.MoodleApi;
 import k0bin.moodle.model.api.PublicConfig;
 
 public final class Moodle {
-    @NonNull
-    private final String siteUrl;
-    @NonNull
-    private final MoodleApi moodle;
+    @Nullable
+    private MoodleApi moodle;
     private static final String SERVICE_KEY = "moodle_mobile_app";
     private static final String URL_SCHEME = "moodlemobile";
     private final double passport;
 
-    @Nullable
-    private String token = null;
+    @NonNull
+    private final MoodleConfiguration configuration;
 
-    @Nullable
-    private String privateToken = null;
-
-    private long userId = 0L;
-
-    private Moodle(@NonNull String siteUrl) {
-        this.siteUrl = siteUrl;
-        this.moodle = new MoodleApi(siteUrl);
+    private Moodle(@NonNull MoodleConfiguration configuration) {
         this.passport = new Random().nextDouble() * 1000.0;
+        this.configuration = configuration;
+        this.moodle = new MoodleApi(configuration.getSiteUrl());
+    }
+
+    public MoodleSetupStatus getStatus() {
+        return configuration.getStatus();
     }
 
     public void setToken(@NonNull String token) {
-        this.token = token;
+        configuration.setToken(token);
     }
 
-    public void setPrivateToken(@NonNull String privateToken) {
-        this.privateToken = token;
+    public void setSiteUrl(@NonNull String siteUrl) {
+        if (!configuration.getSiteUrl().equals(siteUrl)) {
+            configuration.setSiteUrl(siteUrl);
+            moodle = new MoodleApi(siteUrl);
+        }
     }
+
+    public void setPrivateToken(@NonNull String privateToken) {}
 
     @NonNull
     public final Single<LoginRequest> prepareLogin() {
+        if (moodle == null) {
+            throw new RuntimeException("Call setSiteUrl first.");
+        }
         return Single
                 .fromCallable(() -> {
                     final PublicConfig config;
@@ -68,7 +71,7 @@ public final class Moodle {
                     }
 
                     String url = config.getLaunchUrl() + String.format(Locale.ENGLISH, "?service=%s&passport=%f&urlscheme=%s", SERVICE_KEY, passport, URL_SCHEME);
-                    return (LoginRequest)(new LoginRequest.SsoLoginRequest(moodle.getSiteUrl(), url));
+                    return (LoginRequest)(new LoginRequest.SsoLoginRequest(configuration.getSiteUrl(), url));
                 })
                 .retry(error -> error instanceof IOException)
                 .subscribeOn(Schedulers.io())
@@ -77,12 +80,15 @@ public final class Moodle {
 
     @NonNull
     public final Single<Long> loadUserId() throws MoodleException.InvalidTokenException {
-        if (token == null) {
+        if (moodle == null) {
+            throw new RuntimeException("Call setSiteUrl first.");
+        }
+        if (configuration.getToken().length() == 0) {
             throw new MoodleException.InvalidTokenException();
         }
         return Single
-                .fromCallable(() -> moodle.getSiteInfo(token).getUserId())
-                .doOnSuccess(it -> userId = it)
+                .fromCallable(() -> moodle.getSiteInfo(configuration.getToken()).getUserId())
+                .doOnSuccess(it -> configuration.setUserId(it))
                 .retry(error -> error instanceof IOException)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
@@ -91,12 +97,15 @@ public final class Moodle {
     @SuppressLint("CheckResult")
     @NonNull
     public final Flowable<Course> loadCourses() throws MoodleException.InvalidTokenException {
-        if (token == null) {
+        if (moodle == null) {
+            throw new RuntimeException("Call setSiteUrl first.");
+        }
+        if (configuration.getToken().length() == 0) {
             throw new MoodleException.InvalidTokenException();
         }
         final Flowable<Course> flowable = Flowable.defer(() -> s -> {
             try {
-                final List<Course> courses = moodle.getCourses(token, userId);
+                final List<Course> courses = moodle.getCourses(configuration.getToken(), configuration.getUserId());
                 for (Course course : courses) {
                     s.onNext(course);
                 }
@@ -112,25 +121,11 @@ public final class Moodle {
         return flowable;
     }
 
-    @NonNull
-    public String getSiteUrl() {
-        return siteUrl;
-    }
-
-    public void setUserId(long userId) {
-        this.userId = userId;
-    }
-
-    private static final Map<String, WeakReference<Moodle>> instances = new HashMap<>();
-    public static Moodle getInstance(@NonNull String siteUrl) {
-        synchronized (instances) {
-            WeakReference<Moodle> moodleRef = instances.get(siteUrl);
-            if (moodleRef != null && moodleRef.get() != null) {
-                return moodleRef.get();
-            }
-            Moodle instance = new Moodle(siteUrl);
-            instances.put(siteUrl, new WeakReference<>(instance));
-            return instance;
+    private static Moodle instance;
+    public synchronized static Moodle getInstance(@NonNull Context context) {
+        if (instance == null) {
+            instance = new Moodle(MoodleConfiguration.load(context));
         }
+        return instance;
     }
 }

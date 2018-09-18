@@ -10,18 +10,12 @@ import android.util.Log;
 
 import java.io.UnsupportedEncodingException;
 
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.schedulers.Schedulers;
 import k0bin.moodle.model.LoginRequest;
 import k0bin.moodle.model.Moodle;
-import k0bin.moodle.model.MoodlePrefs;
 
 public class LoginViewModel extends MoodleViewModel {
     @NonNull
     private final MutableLiveData<LoginRequest> loginRequest = new MutableLiveData<>();
-
-    @NonNull
-    private final MoodlePrefs prefs;
 
     @NonNull
     private final MutableLiveData<Boolean> isDone = new MutableLiveData<>();
@@ -30,11 +24,10 @@ public class LoginViewModel extends MoodleViewModel {
     public LoginViewModel(@NonNull Application application) {
         super(application);
 
-        prefs = MoodlePrefs.getInstance(application);
         isDone.setValue(false);
 
         getMoodle()
-                .flatMapSingleElement(Moodle::prepareLogin)
+                .flatMap(Moodle::prepareLogin)
                 .doOnError(it -> {
                     Log.e("LoginVM", it.getMessage());
                 })
@@ -66,10 +59,9 @@ public class LoginViewModel extends MoodleViewModel {
 
     @SuppressLint("CheckResult")
     public void setToken(@NonNull String token) {
-        prefs.setToken(token);
         getMoodle()
-                .flatMapSingleElement(Moodle::loadUserId)
-                .doOnSuccess(prefs::setUserId)
+                .doOnSuccess(it -> it.setToken(token))
+                .flatMap(Moodle::loadUserId)
                 .doOnError(error -> {
                     isDone.setValue(false);
                     Log.e("LoginVM", "Login failed with error: "+error.getMessage());

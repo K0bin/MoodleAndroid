@@ -7,40 +7,29 @@ import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
 import android.support.annotation.NonNull;
 
-import k0bin.moodle.model.MoodlePrefs;
-import k0bin.moodle.model.MoodleStatus;
+import io.reactivex.Single;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
+import k0bin.moodle.model.Moodle;
+import k0bin.moodle.model.MoodleSetupStatus;
 
 public class MainViewModel extends AndroidViewModel {
     @NonNull
-    private final MutableLiveData<MoodleStatus> status = new MutableLiveData<>();
-    @NonNull
-    private final MoodlePrefs moodlePrefs;
+    private final MutableLiveData<MoodleSetupStatus> status = new MutableLiveData<>();
 
     @SuppressLint("CheckResult")
     public MainViewModel(@NonNull Application application) {
         super(application);
 
-        this.moodlePrefs = MoodlePrefs.getInstance(application);
-        moodlePrefs
-                .getSite()
-                .map(site -> site != null && site.length() != 0 ? MoodleStatus.DONE : MoodleStatus.NEEDS_SETUP)
-                .zipWith(moodlePrefs.getToken(), (status, token) -> {
-                    if (status != MoodleStatus.DONE) {
-                        return status;
-                    }
-                    return token != null && token.length() != 0 ? MoodleStatus.DONE : MoodleStatus.NEEDS_LOGIN;
-                })
-                .zipWith(moodlePrefs.getUserId(), (status, userId) -> {
-                    if (status != MoodleStatus.DONE) {
-                        return status;
-                    }
-                    return userId != 0 ? MoodleStatus.DONE : MoodleStatus.NEEDS_LOGIN;
-                })
+        Single.fromCallable(() -> Moodle.getInstance(application))
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .map(moodle -> moodle.getStatus())
                 .subscribe(status::setValue);
     }
 
     @NonNull
-    public LiveData<MoodleStatus> getStatus() {
+    public LiveData<MoodleSetupStatus> getStatus() {
         return status;
     }
 }

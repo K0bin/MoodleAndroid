@@ -35,11 +35,6 @@ public final class MoodleApi {
     }
 
     @NonNull
-    public String getSiteUrl() {
-        return siteUrl;
-    }
-
-    @NonNull
     private <T> Request buildAjaxRequest(int index, @NonNull String method, @Nullable T args) {
         final Request.Builder builder = new Request.Builder();
         builder.url(siteUrl + "/lib/ajax/service.php");

@@ -1,6 +1,6 @@
 package k0bin.moodle.model;
 
-public enum MoodleStatus {
+public enum MoodleSetupStatus {
     NEEDS_SETUP,
     NEEDS_LOGIN,
     DONE

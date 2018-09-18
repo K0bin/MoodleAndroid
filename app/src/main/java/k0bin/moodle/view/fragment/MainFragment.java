@@ -15,7 +15,7 @@ import androidx.navigation.NavDestination;
 import androidx.navigation.Navigation;
 import androidx.navigation.fragment.FragmentNavigator;
 import k0bin.moodle.R;
-import k0bin.moodle.model.MoodleStatus;
+import k0bin.moodle.model.MoodleSetupStatus;
 import k0bin.moodle.viewmodel.MainViewModel;
 
 /**
@@ -38,9 +38,9 @@ public class MainFragment extends Fragment {
                 return;
             }
             final NavDestination currentDestination = navController.getCurrentDestination();
-            if (MoodleStatus.NEEDS_SETUP.equals(it) && (!(currentDestination instanceof FragmentNavigator.Destination) || ((FragmentNavigator.Destination)currentDestination).getFragmentClass() != SetupFragment.class)) {
+            if (MoodleSetupStatus.NEEDS_SETUP.equals(it) && (!(currentDestination instanceof FragmentNavigator.Destination) || ((FragmentNavigator.Destination)currentDestination).getFragmentClass() != SetupFragment.class)) {
                 navController.navigate(R.id.action_setup);
-            } else if (MoodleStatus.NEEDS_LOGIN.equals(it) && (!(currentDestination instanceof FragmentNavigator.Destination) || ((FragmentNavigator.Destination)currentDestination).getFragmentClass() != LoginFragment.class)) {
+            } else if (MoodleSetupStatus.NEEDS_LOGIN.equals(it) && (!(currentDestination instanceof FragmentNavigator.Destination) || ((FragmentNavigator.Destination)currentDestination).getFragmentClass() != LoginFragment.class)) {
                 navController.navigate(R.id.action_login);
             }
         });

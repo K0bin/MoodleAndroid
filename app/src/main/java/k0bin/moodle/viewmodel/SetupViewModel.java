@@ -15,7 +15,6 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 import k0bin.moodle.model.LoginRequest;
 import k0bin.moodle.model.Moodle;
-import k0bin.moodle.model.MoodlePrefs;
 import k0bin.moodle.util.Attempt;
 
 public class SetupViewModel extends AndroidViewModel {
@@ -53,7 +52,6 @@ public class SetupViewModel extends AndroidViewModel {
                     }
                 })
                 .observeOn(Schedulers.io())
-                .doOnSuccess(request -> MoodlePrefs.getInstance(getApplication()).setSite(request.getMoodleSiteUrl()))
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(request -> result.setValue(new Attempt<>(request)));
         return result;
@@ -69,8 +67,11 @@ public class SetupViewModel extends AndroidViewModel {
                 return Single.error(new MalformedURLException());
             }
 
-            final Moodle moodle = Moodle.getInstance(siteUrl);
-            return moodle.prepareLogin();
+            return Single.fromCallable(() -> Moodle.getInstance(getApplication()))
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .doOnSuccess(it -> it.setSiteUrl(siteUrl))
+                    .flatMap(Moodle::prepareLogin);
         } catch (MalformedURLException e) {
             return Single.error(e);
         }
