@@ -66,7 +66,7 @@ public class Course {
     @SerializedName("startdate")
     @Expose
     private int startDate;
-    
+
     @SerializedName("enddate")
     @Expose
     private int endDate;

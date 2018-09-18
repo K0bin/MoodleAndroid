@@ -15,6 +15,7 @@ import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 import k0bin.moodle.model.api.Course;
+import k0bin.moodle.model.api.CourseContents;
 import k0bin.moodle.model.api.MoodleApi;
 import k0bin.moodle.model.api.PublicConfig;
 
@@ -119,6 +120,22 @@ public final class Moodle {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
         return flowable;
+    }
+
+    @SuppressLint("CheckResult")
+    @NonNull
+    public final Single<CourseContents> loadCourseContents(long courseId) throws MoodleException.InvalidTokenException {
+        if (moodle == null) {
+            throw new RuntimeException("Call setSiteUrl first.");
+        }
+        if (configuration.getToken().length() == 0) {
+            throw new MoodleException.InvalidTokenException();
+        }
+        return Single
+                .fromCallable(() -> moodle.getCourseContents(configuration.getToken(), courseId))
+                .retry(error -> error instanceof IOException)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
     }
 
     private static Moodle instance;

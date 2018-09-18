@@ -140,4 +140,11 @@ public final class MoodleApi {
         final Type parameterizedType = TypeToken.getParameterized(List.class, Course.class).getType();
         return callRest(parameterizedType, "core_enrol_get_users_courses", null, args);
     }
+
+    public final CourseContents getCourseContents(@NonNull String token, long courseId) throws IOException, MoodleException {
+        final HashMap<String, String> args = new HashMap<>();
+        args.put("wstoken", token);
+        args.put("courseid", Long.toString(courseId, 10));
+        return callRest(CourseContents.class, "core_enrol_get_users_courses", null, args);
+    }
 }

@@ -27,6 +27,8 @@ public class HomeFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        viewModel = ViewModelProviders.of(this).get(HomeViewModel.class);
     }
 
     @Override
@@ -46,13 +48,5 @@ public class HomeFragment extends Fragment {
             result = getResources().getDimensionPixelSize(resourceId);
         }
         return result;
-    }
-
-    @NonNull
-    protected MoodleViewModel getViewModel() {
-        if (viewModel == null) {
-            viewModel = ViewModelProviders.of(this).get(HomeViewModel.class);
-        }
-        return viewModel;
     }
 }

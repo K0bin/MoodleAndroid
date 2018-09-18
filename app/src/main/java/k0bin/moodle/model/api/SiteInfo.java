@@ -38,63 +38,63 @@ public class SiteInfo {
     @SerializedName("siteurl")
     @Expose
     private final String siteUrl;
-    
+
     @SerializedName("userpictureurl")
     @Expose
     private final String userpictureurl;
-    
+
     @SerializedName("functions")
     @Expose
     private final List<ApiFunction> functions;
-    
+
     @SerializedName("downloadfiles")
     @Expose
     private final int downloadFiles;
-    
+
     @SerializedName("uploadfiles")
     @Expose
     private final int uploadFiles;
-    
+
     @SerializedName("release")
     @Expose
     private final String release;
-    
+
     @SerializedName("version")
     @Expose
     private final String version;
-    
+
     @SerializedName("mobilecssurl")
     @Expose
     private final String mobileCssUrl;
-    
+
     @SerializedName("advancedfeatures")
     @Expose
     private final List<AdvancedFeature> advancedFeatures;
-    
+
     @SerializedName("usercanmanageownfiles")
     @Expose
     private final boolean userCanManageOwnFiles;
-    
+
     @SerializedName("userquota")
     @Expose
     private final long userQuota;
-    
+
     @SerializedName("usermaxuploadfilesize")
     @Expose
     private final long userMaxUploadFileSize;
-    
+
     @SerializedName("userhomepage")
     @Expose
     private final int userHomepage;
-    
+
     @SerializedName("siteid")
     @Expose
     private final int siteId;
-    
+
     @SerializedName("sitecalendartype")
     @Expose
     private final String siteCalendarType;
-    
+
     @SerializedName("usercalendartype")
     @Expose
     private final String userCalendarType;
